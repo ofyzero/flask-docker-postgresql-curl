@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    restart: always
+    build: ./services/web
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./services/web/:/usr/src/app/
+    ports:
+      - 5000:5000
+    links:
+      - db
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    restart: always
+    image: postgres:13-alpine
+    env_file: .env.dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hello_flask
+      - POSTGRES_PASSWORD=hello_flask
+      - POSTGRES_DB=hello_flask_dev
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+
+volumes:
+  postgres_data:
